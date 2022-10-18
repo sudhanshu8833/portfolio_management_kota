@@ -1,7 +1,7 @@
 import logging
 import telepot
 from datamanagement.background_functions import working_days
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from .data_collection import run_strategy as collect_data
 from .strategy import *
 # Create your views here.
@@ -15,6 +15,7 @@ from .background_functions import *
 from smartapi import SmartConnect
 import yfinance as yf
 import time as tim
+import ccxt
 from datetime import time, datetime
 logger = logging.getLogger('dev_log')
 
@@ -41,31 +42,33 @@ def do_something_1(strategy):
 
             tim.sleep(600)
         except Exception as e:
-            logger.info(str(e))
+            # logger.info(str(e))
+            print(str(e))
 
-def data_calculation(request):
-    global obj
+# def data_calculation(request):
+#     global obj
 
 
-    logger.info("updated the system")
 
-    
-    user = User1.objects.get(username='testing')
 
-    t = threading.Thread(target=do_something_1, args=[user])
-    t.setDaemon(True)
-    t.start()
+user = User1.objects.get(username='testing')
 
-    return render(request, "index.html")
+t = threading.Thread(target=do_something_1, args=[user])
+t.setDaemon(True)
+t.start()
+
+    # return render(request, "index.html")
 
 
 def index(request):
     with open('datamanagement/data.json') as data_file:
         data = json.load(data_file)
-    logger.info("we have started logging... hurray!!")
+
     df=yf.download("^NSEI",period='1d',interval='1d')
+    user=User1.objects.get(username="testing")
     return render(request, "index.html",{
-        "nifty":df['Close'][-1]
+        "nifty":df['Close'][-1],
+        "user":user
     })
 
 
@@ -136,7 +139,7 @@ def start_strategy(request):
     print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 
     if request.method == "POST":
-        print(request.POST['action'])
+        print(request.POST)
         print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
         buy_factor = request.POST['buy_factor']
         per_premium = request.POST['per_premium']
@@ -155,14 +158,19 @@ def start_strategy(request):
         rand_str = random_string_generator(10, string.ascii_letters)
         # obj.ltpData("NSE", 'NIFTY', "26000")['data']['ltp']
         user = User1.objects.get(username='testing')
-
+        user.angel_api_keys=request.POST['angel_api_keys']
+        user.angel_client_id=request.POST['angel_client_id']
+        user.angel_password=request.POST['angel_password']
+        user.angel_token=request.POST['angel_token']
+        user.save()
+        print(user)
         if request.POST['action']=="review":
             status="TEST"
         else:
             status="OPEN"
 
-        strategy1 = strategy(
 
+        strategy1 = strategy(
             strategy_id=rand_str,
             buy_factor=buy_factor,
             sell_factor=sell_factor,
@@ -194,7 +202,7 @@ def start_strategy(request):
             t.setDaemon(True)
             t.start()
 
-            return render(request, "index.html")
+            return redirect("/data/position")
 
 
         else:

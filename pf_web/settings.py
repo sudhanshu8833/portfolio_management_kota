@@ -146,11 +146,11 @@ LOGGING = {
     },
 
     'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR,'log/info.log'),
-        },
+        # 'file': {
+        #     'level': 'DEBUG',
+        #     'class': 'logging.FileHandler',
+        #     'filename': os.path.join(BASE_DIR,'log/info.log'),
+        # },
 
         'info': {
             'level': 'INFO',
@@ -163,11 +163,11 @@ LOGGING = {
 
     },
     'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
+        # 'django': {
+        #     'handlers': ['file'],
+        #     'level': 'DEBUG',
+        #     'propagate': True,
+        # },
 
         'dev_log': {
             'handlers': ['info'],

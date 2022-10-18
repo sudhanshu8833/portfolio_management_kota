@@ -193,9 +193,6 @@
                             <div class="card-body" >
                                 <div class="basic-form" >
 
-                                  <div class="col-sm-10">
-                                    <button class="btn btn-primary" onclick="url_call('/data/data_calculation')">data calculation</button>
-                                  </div>
                                   <!-- <h4></h4> -->
                                     <form action="/data/start_strategy/" method="post">
                                       {% csrf_token %}
@@ -205,6 +202,35 @@
                                             <h4 style="color: rgb(90, 215, 247);">{{ nifty }}</h4>
                                         </div>
                                       </div>
+
+                                      <div class="mb-3 row">
+                                        <label class="col-sm-3 col-form-label">Angel Api keys</label>
+                                        <div class="col-sm-9">
+                                            <input type="string" class="form-control" placeholder="APIkeys" value="{{ user.angel_api_keys }}" name="angel_api_keys">
+                                        </div>
+                                    </div>                                      
+
+                                    <div class="mb-3 row">
+                                      <label class="col-sm-3 col-form-label">Angel client id</label>
+                                      <div class="col-sm-9">
+                                          <input type="string" class="form-control" placeholder="client id" value="{{ user.angel_client_id }}" name="angel_client_id">
+                                      </div>
+                                  </div>
+
+                                  <div class="mb-3 row">
+                                    <label class="col-sm-3 col-form-label">Angel password</label>
+                                    <div class="col-sm-9">
+                                        <input type="string" class="form-control" placeholder="angel password" value="{{ user.angel_password }}" name="angel_password">
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3 row">
+                                  <label class="col-sm-3 col-form-label">Angel token</label>
+                                  <div class="col-sm-9">
+                                      <input type="string" class="form-control" placeholder="angel token" value="{{ user.angel_token }}" name="angel_token">
+                                  </div>
+                              </div>                              
+
                                         <div class="mb-3 row">
                                             <label class="col-sm-3 col-form-label">Buy Factor</label>
                                             <div class="col-sm-9">

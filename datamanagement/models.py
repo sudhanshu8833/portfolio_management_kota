@@ -11,9 +11,10 @@ class User1(models.Model):
     email=models.EmailField(max_length=50)
     password=models.CharField(max_length=25)
     
-    angel_api_keys=models.CharField(max_length=100,default='SOME STRING')
-    angel_client_id=models.CharField(max_length=10,default='SOME STRING')
-    angel_password=models.CharField(max_length=10,default='SOME STRING')
+    angel_api_keys=models.CharField(max_length=100,default='NuTmF22y')
+    angel_client_id=models.CharField(max_length=10,default='Y99521')
+    angel_password=models.CharField(max_length=100,default='abcd@1234')
+    angel_token=models.CharField(max_length=100,default='SZB2BGTSNPPYOS52TFYQFP6M6E')
     working_days_1=models.IntegerField(default=0)
     working_days_2=models.IntegerField(default=0)
     expiry_1=models.CharField(default="NA",max_length=12)

@@ -28,13 +28,15 @@ class run_strategy():
         self.ltp_prices = {}
         self.times = tim.time()
         self.day = datetime.now(timezone("Asia/Kolkata")).day
+        user = User1.objects.get(username='testing')
         for i in range(100):
             try:
-                token="SZB2BGTSNPPYOS52TFYQFP6M6E"
-                self.obj=SmartConnect(api_key="NuTmF22y")
-                data = self.obj.generateSession("Y99521","abcd@1234",pyotp.TOTP(token).now())
+
+                self.obj=SmartConnect(api_key=user.angel_api_keys)
+                data = self.obj.generateSession(user.angel_client_id,user.angel_password,pyotp.TOTP(user.angel_token).now())
                 refreshToken= data['data']['refreshToken']
                 break
+
             except Exception as e:
                 print(str(e))
                 tim.sleep(1)
@@ -55,7 +57,7 @@ class run_strategy():
         user.pnl=total_pnls
         user.pnl=round(user.pnl,2)
         user.save()
-
+        print(user)
         with open('datamanagement/data.json') as data_file:
             data = json.load(data_file)
         self.ltp_prices['26000'] = data['26000']
@@ -80,10 +82,10 @@ class run_strategy():
                 position_opened[i].current_price = price_now
 
                 if position_opened[i].side=="LONG":
-                    position_opened[i].pnl=((price_now-position_opened[i].price_in)/position_opened[i].price_in)*100
+                    position_opened[i].pnl=(price_now-position_opened[i].price_in)
                     position_opened[i].pnl=round(position_opened[i].pnl,2)
                 if position_opened[i].side=="SHORT":
-                    position_opened[i].pnl=((position_opened[i].price_in-price_now)/position_opened[i].price_in)*100
+                    position_opened[i].pnl=(position_opened[i].price_in-price_now)
                     position_opened[i].pnl=round(position_opened[i].pnl,2)
                     
                 total_pnl+=position_opened[i].pnl
@@ -242,7 +244,7 @@ class run_strategy():
 
                     except Exception:
                         print(traceback.format_exc())
-                        logger.info(str(traceback.format_exc()))
+                        # logger.info(str(traceback.format_exc()))
 
                 else:
                     tim.sleep(600*6)
@@ -252,7 +254,7 @@ class run_strategy():
 
             except Exception:
                 print(traceback.format_exc())
-                logger.info(str(traceback.format_exc()))
+                # logger.info(str(traceback.format_exc()))
 
     def vix_calculation(self, price):
 

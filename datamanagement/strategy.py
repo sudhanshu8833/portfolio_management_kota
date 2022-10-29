@@ -121,6 +121,9 @@ class run_strategy():
         if self.parameters.expiry_selected == 1:
             expiry = self.parameters.expiry_2
 
+        if self.parameters.expiry_selected == 2:
+            expiry = self.parameters.expiry_3
+            
         symbol_pe = expiry + \
             str(int(strike_price+self.parameters.sell_factor))+'PE'
         symbol_ce = expiry + \
@@ -261,6 +264,7 @@ class run_strategy():
         print(self.parameters.working_days_1)
         working_days_1 = self.parameters.working_days_1
         working_days_2 = self.parameters.working_days_2
+        working_days_3 = self.parameters.working_days_3
 
         if working_days_1 != 0:
 
@@ -271,6 +275,8 @@ class run_strategy():
 
             nifty_range = price*days_vix*(1-vix_price/100)/100
             v_factor = round(nifty_range/50, 0)*50
+            expiry = self.parameters.expiry_1
+            self.parameters.expiry_selected = 0
 
         else:
             v_factor = 0
@@ -283,15 +289,26 @@ class run_strategy():
 
             nifty_range = price*days_vix*(1-vix_price/100)/100
             v_factor = round(nifty_range/50, 0)*50
-
             expiry = self.parameters.expiry_2
             self.parameters.expiry_selected = 1
+
+
+        if v_factor < self.parameters.buy_factor:
+
+            vix_price = float(yf.download(
+                "^INDIAVIX", period='1D', interval="1D")['Close'][-1])
+
+            days_vix = vix_price / (math.sqrt(252/working_days_3))
+
+            nifty_range = price*days_vix*(1-vix_price/100)/100
+            v_factor = round(nifty_range/50, 0)*50
+
+            expiry = self.parameters.expiry_3
+            self.parameters.expiry_selected = 2
             self.parameters.save()
 
-        else:
-            expiry = self.parameters.expiry_1
-            self.parameters.expiry_selected = 0
-            self.parameters.save()
+
+
 
         self.parameters.v_factor = v_factor
         self.parameters.save()
@@ -483,9 +500,10 @@ class run_strategy():
 
             v_factor = self.vix_calculation(price_buy)
 
+            if self.parameters.expiry_selected == 2:
+                expiry = self.parameters.expiry_3
 
-
-            if self.parameters.expiry_selected == 1:
+            elif self.parameters.expiry_selected == 1:
                 expiry = self.parameters.expiry_2
 
             else:

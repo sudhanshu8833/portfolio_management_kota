@@ -39,7 +39,7 @@ def this_scripts():
 
 
     for i in range(len(df)):
-        print(i)
+        # print(i)
 
         if 'NIFTY' in df['symbol'][i][:6] and 'NFO' in df['exch_seg'][i]:
             df1.loc[len(df1.index)] = df.loc[i] 
@@ -159,12 +159,15 @@ def working_day_calculation(value):
     holiday_date, expiry_date = convert_to_datetime(holidays, expiry)
     days_1 = working_days(expiry_date[0], holiday_date)
     days_2 = working_days(expiry_date[1], holiday_date)
+    days_3 = working_days(expiry_date[2], holiday_date)
     print("got expiry dates")
     expiry_nifty=['20-Oct-2022', '27-Oct-2022', '03-Nov-2022', '10-Nov-2022', '17-Nov-2022', '24-Nov-2022', '01-Dec-2022', '08-Dec-2022', '15-Dec-2022', '29-Dec-2022', '30-Mar-2023', '29-Jun-2023', '28-Sep-2023', '28-Dec-2023', '27-Jun-2024', '26-Dec-2024', '26-Jun-2025', '24-Dec-2025', '25-Jun-2026', '31-Dec-2026', '24-Jun-2027']
 
     print("got expiry list")
     expiry_1=option_symbol('NIFTY',expiry_nifty[0])
     expiry_2=option_symbol('NIFTY',expiry_nifty[1])
+    expiry_3=option_symbol('NIFTY',expiry_nifty[2])
+    
     # expiry_2=option_symbol('NIFTY',)
 
     print("option symbols")
@@ -173,9 +176,12 @@ def working_day_calculation(value):
 
     user.working_days_1=int(days_1)
     user.working_days_2=int(days_2)
+    user.working_days_3=int(days_3)
     user.expiry_1=expiry_1
     user.expiry_2=expiry_2
-
+    user.expiry_3=expiry_3
+    print(expiry_1, expiry_2,expiry_3)
+    print("#####################################")
     user.save()
     print("done it brooo....")
     return days_1,days_2

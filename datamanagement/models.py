@@ -17,8 +17,10 @@ class User1(models.Model):
     angel_token=models.CharField(max_length=100,default='SZB2BGTSNPPYOS52TFYQFP6M6E')
     working_days_1=models.IntegerField(default=0)
     working_days_2=models.IntegerField(default=0)
+    working_days_3=models.IntegerField(default=0)
     expiry_1=models.CharField(default="NA",max_length=12)
     expiry_2=models.CharField(default="NA",max_length=12)
+    expiry_3=models.CharField(default="NA",max_length=12)
     pnl=models.FloatField(default=0)
 
 
@@ -36,8 +38,10 @@ class strategy(models.Model):
     status=models.CharField(default="OPEN",max_length=8)
     working_days_1=models.IntegerField(default=0)
     working_days_2=models.IntegerField(default=0)
+    working_days_3=models.IntegerField(default=0)
     expiry_1=models.CharField(default="NA",max_length=12)
     expiry_2=models.CharField(default="NA",max_length=12)
+    expiry_3=models.CharField(default="NA",max_length=12)
 
 
     T1=models.FloatField(default=0)

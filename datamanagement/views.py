@@ -22,7 +22,7 @@ logger = logging.getLogger('dev_log')
 # bot = telepot.Bot("5448843199:AAEKjMn2zwAyZ5tu8hsLIgsakxoLf980BoY")
 # bot.getMe()
 sleep_time=0
-# working_day_calculation(0)
+
 
 def do_something_1(strategy):
     check_val=0
@@ -31,7 +31,7 @@ def do_something_1(strategy):
         try:
             if time(9, 1) <= datetime.now(timezone("Asia/Kolkata")).time() and check_val ==0:
                 check_val=1
-                working_day_calculation(0)
+                # working_day_calculation(0)
                 strat = collect_data(strategy)
                 value=strat.run()
                 if value!=None:
@@ -186,8 +186,10 @@ def start_strategy(request):
             ET=et,
             working_days_1=user.working_days_1,
             working_days_2=user.working_days_2,
+            working_days_3=user.working_days_3,
             expiry_1=user.expiry_1,
             expiry_2=user.expiry_2,
+            expiry_3=user.expiry_3,
             T_now=3
 
         )

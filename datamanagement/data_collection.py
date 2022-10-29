@@ -56,7 +56,7 @@ class run_strategy():
                 with open('datamanagement/data.json') as file:
                     data=json.load(file)
                     data[positions_opened[i].token]=self.obj.ltpData("NFO", positions_opened[i].symbol, positions_opened[i].token)['data']['ltp']
-                    tim.sleep(.5)
+
                     json_object = json.dumps(data, indent = 2)
                     with open("datamanagement/data.json","w") as write_file:
                         write_file.write(json_object)

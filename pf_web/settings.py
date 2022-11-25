@@ -25,7 +25,8 @@ SECRET_KEY = '_k091si(bm@c$^rka3008*y&!ay(+(vv$bmb3r^2yy&a%b5y1w'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["143.244.141.118", '127.0.0.1', 'localhost', "*"]
+ALLOWED_HOSTS = ["143.244.141.118", '127.0.0.1', 'localhost',
+                 "*", "tradebot.ffts.in", "www.tradebot.ffts.in"]
 
 
 # Application definition
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'datamanagement',
+    'rest_framework',
 
 
 ]
@@ -146,22 +148,19 @@ LOGGING = {
     },
 
     'handlers': {
-        # 'file': {
-        #     'level': 'DEBUG',
-        #     'class': 'logging.FileHandler',
-        #     'filename': os.path.join(BASE_DIR,'log/info.log'),
-        # },
+
 
         'info': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR,'log/dev.log'),
-            'formatter':'verbose'
+            'filename': os.path.join(BASE_DIR, 'log/dev.log'),
+            'formatter': 'verbose'
         }
 
-        
+
 
     },
+
     'loggers': {
         # 'django': {
         #     'handlers': ['file'],
@@ -178,35 +177,6 @@ LOGGING = {
     },
 }
 
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': True,
-#     'formatters': {
-#         'verbose': {
-#             'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-#             'style': '{',
-#         },
-#         'simple': {
-#             'format': '{levelname} {message}',
-#             'style': '{',
-#         },
-#     },
-
-#     'handlers': {
-
-#         'info': {
-#             'level': 'INFO',
-#             'class': 'logging.handlers.RoatatingFileHandler',
-#             'filename':os.path.join(BASE_DIR,'log/info.log'),
-#             'formatter':'verbose',
-#             'encoding':'utf-8'
-#         }
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['console','info'],
-#             'propagate': True,
-#             'level':'INFO'
-#         }
-#     }
-# }
+CRONJOBS = [
+    ('0 8 * * *', 'datamanagement.cron.my_scheduled_job')
+]

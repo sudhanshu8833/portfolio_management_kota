@@ -14,13 +14,43 @@ import json
 import pandas as pd
 from .models import *
 
-# def scripts():
+def numtomon(num):
+    months=[        'Jan',
+        'Feb', 
+        'Mar', 
+        'Apr', 
+        'May', 
+        'Jun', 
+        'Jul', 
+        'Aug', 
+        'Sep', 
+        'Oct',
+        'Nov', 
+        'Dec']
+    return months[num-1]
 
-#     url="https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json"
-#     data=requests.get(url=url)
-#     data=data.json()
-#     df = pd.DataFrame(data)
-#     df.to_csv("scripts.csv")
+
+def expiry_list_gen():
+    sdate = datetime.date(datetime.now())  # start date
+    edate = date(2023, 12, 31) 
+    types='03-Nov-2022'
+    expiry_list=[]
+    while sdate < edate:
+        if sdate.weekday() != 3:  # not thursday
+            sdate += timedelta(days=1)
+            continue
+        # It is thursday
+        if (len(str(sdate.day))==1):
+            date1='0'+str(sdate.day)
+
+        else:
+            date1=sdate.day
+        expiry_list.append(str(date1)+'-'+numtomon(int(sdate.month))+"-"+str(sdate.year))
+        print(sdate.month)
+        sdate += timedelta(days=7)  #  next week
+
+    return expiry_list
+
 
 
 def this_scripts():
@@ -39,7 +69,7 @@ def this_scripts():
 
 
     for i in range(len(df)):
-        # print(i)
+        print(i)
 
         if 'NIFTY' in df['symbol'][i][:6] and 'NFO' in df['exch_seg'][i]:
             df1.loc[len(df1.index)] = df.loc[i] 
@@ -65,6 +95,21 @@ def monthToNum(shortMonth):
         'nov': 11,
         'dec': 12
     }[shortMonth]
+
+def numtomon(num):
+    months=[        'jan',
+        'feb', 
+        'mar', 
+        'apr', 
+        'may', 
+        'jun', 
+        'jul', 
+        'aug', 
+        'sep', 
+        'oct',
+        'nov', 
+        'dec']
+    return months[num-1]
 
 data_holiday=[{'tradingDate': '26-Jan-2022', 'weekDay': 'Wednesday', 'description': 'Republic Day', 'Sr_no': 1}, {'tradingDate': '01-Mar-2022', 'weekDay': 'Tuesday', 'description': 'Mahashivratri', 'Sr_no': 2}, {'tradingDate': '18-Mar-2022', 'weekDay': 'Friday', 'description': 'Holi', 'Sr_no': 3}, {'tradingDate': '10-Apr-2022', 'weekDay': 'Sunday', 'description': 'Ram Navami', 'Sr_no': 4}, {'tradingDate': '14-Apr-2022', 'weekDay': 'Thursday', 'description': 'Dr.Baba Saheb Ambedkar Jayanti/Mahavir Jayanti', 'Sr_no': 5}, {'tradingDate': '15-Apr-2022', 'weekDay': 'Friday', 'description': 'Good Friday', 'Sr_no': 6}, {'tradingDate': '01-May-2022', 'weekDay': 'Sunday', 'description': 'Maharashtra Day', 'Sr_no': 7}, {'tradingDate': '03-May-2022', 'weekDay': 'Tuesday', 'description': 'Id-Ul-Fitr (Ramzan ID)', 'Sr_no': 8}, {'tradingDate': '10-Jul-2022', 'weekDay': 'Sunday', 'description': 'Bakri Id', 'Sr_no': 9}, {'tradingDate': '09-Aug-2022', 'weekDay': 'Tuesday', 'description': 'Moharram', 'Sr_no': 10}, {'tradingDate': '15-Aug-2022', 'weekDay': 'Monday', 'description': 'Independence Day', 'Sr_no': 11}, {'tradingDate': '31-Aug-2022', 'weekDay': 'Wednesday', 'description': 'Ganesh Chaturthi', 'Sr_no': 12}, {'tradingDate': '02-Oct-2022', 'weekDay': 'Sunday', 'description': 'Mahatma Gandhi Jayanti', 'Sr_no': 13}, {'tradingDate': '05-Oct-2022', 'weekDay': 'Wednesday', 'description': 'Dussehra', 'Sr_no': 14}, {'tradingDate': '24-Oct-2022', 'weekDay': 'Monday', 'description': 'Diwali * Laxmi Pujan', 'Sr_no': 15}, {'tradingDate': '26-Oct-2022', 'weekDay': 'Wednesday', 'description': 'Diwali-Balipratipada', 'Sr_no': 16}, {'tradingDate': '08-Nov-2022', 'weekDay': 'Tuesday', 'description': 'Gurunanak Jayanti', 'Sr_no': 17}, {'tradingDate': '25-Dec-2022', 'weekDay': 'Sunday', 'description': 'Christmas', 'Sr_no': 18}]
 
@@ -149,19 +194,46 @@ def working_days(expiry_date, holidays):
     return difference.days
 
 
+
+def expiry_list_gen_1():
+    sdate = datetime.date(datetime.now())  # start date
+    edate = date(2023, 12, 31) 
+    types='03-Nov-2022'
+    expiry_list=[]
+    while sdate < edate:
+        if sdate.weekday() != 3:  # not thursday
+            sdate += timedelta(days=1)
+            continue
+        # It is thursday
+        if (len(str(sdate.day))==1):
+            date1='0'+str(sdate.day)
+
+        else:
+            date1=sdate.day
+        expiry_list.append(str(sdate)[2:])
+        
+        sdate += timedelta(days=7)  #  next week
+
+    
+    return expiry_list
+
 def working_day_calculation(value):
     print("doing it brooo....")
     this_scripts()
 
     holidays = getting_holidays()
     print("got holidays")
-    expiry = expiry_dates()
+    expiry = expiry_list_gen_1()
+
+
     holiday_date, expiry_date = convert_to_datetime(holidays, expiry)
     days_1 = working_days(expiry_date[0], holiday_date)
     days_2 = working_days(expiry_date[1], holiday_date)
     days_3 = working_days(expiry_date[2], holiday_date)
     print("got expiry dates")
-    expiry_nifty=['20-Oct-2022', '27-Oct-2022', '03-Nov-2022', '10-Nov-2022', '17-Nov-2022', '24-Nov-2022', '01-Dec-2022', '08-Dec-2022', '15-Dec-2022', '29-Dec-2022', '30-Mar-2023', '29-Jun-2023', '28-Sep-2023', '28-Dec-2023', '27-Jun-2024', '26-Dec-2024', '26-Jun-2025', '24-Dec-2025', '25-Jun-2026', '31-Dec-2026', '24-Jun-2027']
+    expiry_nifty=expiry_list_gen()
+
+
 
     print("got expiry list")
     expiry_1=option_symbol('NIFTY',expiry_nifty[0])
@@ -189,9 +261,6 @@ def working_day_calculation(value):
 
 # %%
 def option_symbol(symbol, expiry_date):
-
     return str(symbol)+str(expiry_date[:2])+str(expiry_date[3:6]).upper()+expiry_date[-2:]
-
-
 
 

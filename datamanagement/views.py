@@ -4,11 +4,15 @@ from datamanagement.background_functions import working_days
 from django.shortcuts import redirect, render
 from .data_collection import run_strategy as collect_data
 from .strategy import *
+from ast import literal_eval
+from django.contrib.auth import authenticate,  login, logout
 # Create your views here.
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 import threading
 from datamanagement.models import strategy
 import random
+import json
 import string
 from .models import positions, orders, strategy
 from .background_functions import *
@@ -17,58 +21,58 @@ import yfinance as yf
 import time as tim
 import ccxt
 from datetime import time, datetime
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from AesEverywhere import aes256
+# working_day_calculation(0)
 logger = logging.getLogger('dev_log')
-
-# bot = telepot.Bot("5448843199:AAEKjMn2zwAyZ5tu8hsLIgsakxoLf980BoY")
-# bot.getMe()
 sleep_time=0
 
+def get_app_session_id():
+    url="https://stagingtradingorestapi.swastika.co.in/auth/SSO/GetSSOAppSessionId"
+    body = {
+            "AccessKey": "LAKSGPT@APK1734#",
+            "AccessSecret": "AFE2253F-5A4F-4590-BA13-F69B3D8B5E10"
+            }
 
-def do_something_1(strategy):
-    check_val=0
-
-    while True:
-        try:
-            if time(9, 1) <= datetime.now(timezone("Asia/Kolkata")).time() and check_val ==0:
-                check_val=1
-                # working_day_calculation(0)
-                strat = collect_data(strategy)
-                value=strat.run()
-                if value!=None:
-                    return value
-
-            if time(8, 1) <= datetime.now(timezone("Asia/Kolkata")).time() and time(8, 15) >= datetime.now(timezone("Asia/Kolkata")).time() and check_val==1:
-                check_val=0
-
-            tim.sleep(600)
-        except Exception as e:
-            # logger.info(str(e))
-            print(str(e))
-
-# def data_calculation(request):
-#     global obj
+    response=requests.get(url,data=body).json()
+    
+    user=User1.objects.get(username="testing")
+    user.app_session_id_url=f'https://stagingjustradekb.swastika.co.in/auth/login?AppSessionId={response["Data"]["AppSessionId"]}&State=SWASTIKA'
+    logger.info(f"SESSION CREATED BY CLIENT - {user.app_session_id_url}")
+    user.save()
 
 
+@api_view(["POST","GET"]) #allowed methods
+def get_session_id(request):
+    data=request.data
+    access_token=aes256.decrypt(request.data['ReturnParameter'], '9E5000F4-6489-4D84-8B67-B8D8D481F9BB')
+    access_token=literal_eval(access_token.decode('utf-8'))
+    client_code=access_token['ClientCode']
+    access_token=access_token['AccessToken']
+    user=User1.objects.get(username="testing")
+    user.access_token=access_token
+    user.client_code=client_code
+    user.save()
+
+    return Response(data)
 
 
-user = User1.objects.get(username='testing')
-
-t = threading.Thread(target=do_something_1, args=[user])
-t.setDaemon(True)
-t.start()
-
-    # return render(request, "index.html")
 
 
+@login_required(login_url='')
 def index(request):
     with open('datamanagement/data.json') as data_file:
         data = json.load(data_file)
 
     df=yf.download("^NSEI",period='1d',interval='1d')
+
     user=User1.objects.get(username="testing")
+    # user.app_session_id_url="https://stackoverflow.com/questions/2906582/how-do-i-create-an-html-button-that-acts-like-a-link"
     return render(request, "index.html",{
-        "nifty":df['Close'][-1],
+        "nifty":round(df['Close'][-1],2),
         "user":user
+
     })
 
 
@@ -76,7 +80,7 @@ def index(request):
 
 
 
-
+@login_required(login_url='')
 def position(request):
 
     strategies = strategy.objects.filter(status="OPEN")
@@ -104,7 +108,7 @@ def position(request):
         'user':user
     })
 
-
+@login_required(login_url='')
 def closed_positions(request):
 
     strategies = strategy.objects.filter(status="CLOSED")
@@ -149,6 +153,7 @@ def start_strategy(request):
         sell_factor = request.POST['sell_factor']
         lot = request.POST['lot']
         et = request.POST['et']
+        paper=request.POST['paper']
         try:
             type = str(request.POST['type'])
 
@@ -158,12 +163,7 @@ def start_strategy(request):
         rand_str = random_string_generator(10, string.ascii_letters)
         # obj.ltpData("NSE", 'NIFTY', "26000")['data']['ltp']
         user = User1.objects.get(username='testing')
-        user.angel_api_keys=request.POST['angel_api_keys']
-        user.angel_client_id=request.POST['angel_client_id']
-        user.angel_password=request.POST['angel_password']
-        user.angel_token=request.POST['angel_token']
-        user.save()
-        print(user)
+
         if request.POST['action']=="review":
             status="TEST"
         else:
@@ -180,8 +180,7 @@ def start_strategy(request):
             time_out=timeout,
             LIMIT=type,
             lot=lot,
-        
-
+            paper=paper,
             status=status,
             ET=et,
             working_days_1=user.working_days_1,
@@ -193,11 +192,11 @@ def start_strategy(request):
             T_now=3
 
         )
-
+        print(f"PAPER IS- {paper}")
         strategy1.save()
 
         strategy1 = strategy.objects.get(strategy_id=rand_str)
-        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+        
         if request.POST['action']!="review":
             
             t = threading.Thread(target=do_something, args=[strategy1])
@@ -219,22 +218,14 @@ def start_strategy(request):
 
 def do_something(strategy):
 
-
-    # try:
     strat = run_strategy(strategy)
     value=strat.run()
     if value!=None:
         return value
 
-    # except Exception as e:
-    #     logger.info(traceback.format_exc())
 
 
-    # messages
-    # while True:
-    #     print(data)
-
-
+@login_required(login_url='')
 def close_positions(request,strategy_id):
     strategy1 = strategy.objects.get(strategy_id=strategy_id)
     strat1 = run_strategy(strategy)
@@ -260,3 +251,26 @@ def close_positions(request,strategy_id):
 
 def random_string_generator(str_size, allowed_chars):
     return ''.join(random.choice(allowed_chars) for x in range(str_size))
+
+
+def login_page(request):
+    return render(request, "login.html")
+
+def handleLogin(request):
+
+    if request.user.is_authenticated:
+        return redirect('/../../data/index')
+    if request.method == "POST":
+
+        loginusername = request.POST['username']
+        loginpassword = request.POST['password']
+        # user = authenticate(username=loginusername, password=loginpassword)
+        if loginpassword=="abcd@1234" and loginusername=="Y99521":
+            user=User.objects.get(username=loginusername)
+            login(request, user)
+            return redirect("/../../data/index")
+        else:
+
+            messages.error(request, "Invalid credentials! Please try again")
+            return redirect("accounts/login")
+    return redirect("accounts/login")

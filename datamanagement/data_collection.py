@@ -63,7 +63,7 @@ class run_strategy():
 
                         
             except Exception as e:
-                logger.info(str(e))
+                # logger.info(str(e))
                 print(str(e))
 
         with open('datamanagement/data.json') as file:

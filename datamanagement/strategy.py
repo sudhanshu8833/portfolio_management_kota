@@ -13,6 +13,8 @@ import traceback
 from pytz import timezone
 from datetime import time, datetime
 import pyotp
+import requests
+from AesEverywhere import aes256
 # import telepot
 # bot = telepot.Bot("5448843199:AAEKjMn2zwAyZ5tu8hsLIgsakxoLf980BoY")
 # bot.getMe()
@@ -31,7 +33,7 @@ class run_strategy():
         user = User1.objects.get(username='testing')
         for i in range(100):
             try:
-
+                
                 self.obj=SmartConnect(api_key=user.angel_api_keys)
                 data = self.obj.generateSession(user.angel_client_id,user.angel_password,pyotp.TOTP(user.angel_token).now())
                 refreshToken= data['data']['refreshToken']
@@ -40,6 +42,56 @@ class run_strategy():
             except Exception as e:
                 print(str(e))
                 tim.sleep(1)
+
+###################################################################
+
+    def place_order(self,symbol,side):
+        user=User1.objects.get(username="testing")
+        url="https://stagingtradingoapi.swastika.co.in/kb/PlaceOrders/PlaceOrder"
+
+        symbol_1=symbol[:-7]
+
+        if "PE"==symbol[-2:]:
+            symbol_1+="P"
+        elif "CE"==symbol[-2:]:
+            symbol_1+="C"
+        
+        symbol_1+=symbol[-7:-2]
+
+        if side=="BUY":
+            tt="B"
+
+        elif side=="SELL":
+            tt="S"
+
+        body={
+            "Uid": str(user.client_code),
+            "Actid": str(user.client_code),
+            "Exch": "NFO",
+            "Tsym": str(symbol_1),
+            "Qty": str(int(self.lot)*50),
+            "Prc": "0",
+            "Prd": "M",
+            "Trantype": str(tt),
+            "Prctyp": "MKT",
+            "Ret": "DAY"
+            }
+
+
+        headers={
+            "Authorization":f"Bearer {user.access_token}"
+        }
+
+
+
+        decrypt=requests.post(url,headers=headers,json=body)
+        print(decrypt)
+        print(decrypt.content)
+        return decrypt.content
+###################################################################
+
+
+
 
     def ltp_nifty_options(self, token_dict, dict_token):
 
@@ -134,10 +186,7 @@ class run_strategy():
 
         p = self.add_positions(symbol_pe, 'SHORT', symbol_pe_price, 0, 0, token_dict, dict_token)
         p = self.add_positions(symbol_ce, 'SHORT', symbol_ce_price, 0, 0, token_dict, dict_token)
-        # p = self.add_orders(symbol_pe, "SELL", float(
-        #     self.ltp_prices[token_dict[symbol_pe]]), True, token_dict, dict_token)
-        # p = self.add_orders(symbol_ce, "SELL", float(
-        #     self.ltp_prices[token_dict[symbol_ce]]), True, token_dict, dict_token)
+
 
     def close_all_positions(self, token_dict, dict_token):
 
@@ -328,6 +377,12 @@ class run_strategy():
         )
         strategy1.save()
 
+        try:
+            if self.parameters.paper=="off":
+                self.place_order(symbol, side)
+        except Exception as e:
+            print(str(e))
+
     def add_positions(self, symbol, side, price_in, time_out, price_out, token_dict, dict_token):
 
         strategy1 = positions(
@@ -342,6 +397,8 @@ class run_strategy():
             status="OPEN",
             token=str(token_dict[symbol])
         )
+
+
         strategy1.save()
 
     def market_order(self, nifty_price, v_factor, expiry, token_dict, dict_token, limit):

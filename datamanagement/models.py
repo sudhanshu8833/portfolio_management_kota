@@ -15,6 +15,7 @@ class User1(models.Model):
     angel_client_id=models.CharField(max_length=10,default='Y99521')
     angel_password=models.CharField(max_length=100,default='abcd@1234')
     angel_token=models.CharField(max_length=100,default='SZB2BGTSNPPYOS52TFYQFP6M6E')
+
     working_days_1=models.IntegerField(default=0)
     working_days_2=models.IntegerField(default=0)
     working_days_3=models.IntegerField(default=0)
@@ -22,7 +23,9 @@ class User1(models.Model):
     expiry_2=models.CharField(default="NA",max_length=12)
     expiry_3=models.CharField(default="NA",max_length=12)
     pnl=models.FloatField(default=0)
-
+    access_token=models.CharField(default="NA",max_length=1000)
+    app_session_id_url=models.CharField(default="NA",max_length=1000)
+    client_code=models.CharField(default="NA",max_length=1000)
 
 class strategy(models.Model):
 
@@ -43,7 +46,6 @@ class strategy(models.Model):
     expiry_2=models.CharField(default="NA",max_length=12)
     expiry_3=models.CharField(default="NA",max_length=12)
 
-
     T1=models.FloatField(default=0)
     T2=models.FloatField(default=0)
     T3=models.FloatField(default=0)
@@ -59,7 +61,7 @@ class strategy(models.Model):
 
     nifty_current=models.FloatField(default=0)
     buy_nifty=models.FloatField(default=0)
-    
+    paper=models.CharField(default="on",max_length=10)
 
     # sleep_time=models.IntegerField(default=0)
 

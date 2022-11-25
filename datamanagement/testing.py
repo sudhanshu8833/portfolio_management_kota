@@ -1,75 +1,84 @@
-from AesEverywhere import aes256
-import json
-from aiohttp import payload
 import requests
-from smartapi import SmartConnect
-from smartapi import SmartWebSocket
-
-# url="https://stagingtradingoapi.swastika.co.in/token"
-
-# body={
-  
-# "grant_type": "password",
-
-# "username": "lakshyaguptaApp",
-
-# "password": "lakshyaguptaApp@01734",
-
-# "version": "1"
-
-# }
-import pyotp
-
-
-token="SZB2BGTSNPPYOS52TFYQFP6M6E"
-obj=SmartConnect(api_key="NuTmF22y")
-data = obj.generateSession("Y99521","abcd@1234",pyotp.TOTP(token).now())
-
-
-
-print(obj.ltpData("NSE","NIFTY" ,"26000"))
-
-
-# for getting accesstoken
-# resonse=requests.post(url,data=body)
-# print(resonse.json())
-
-
-
-# for creating a session
-# url="https://stagingtradingoapi.swastika.co.in/api/User/LoginTwoFA"
+from AesEverywhere import aes256
+from ast import literal_eval
+from pprint import pprint
+######################################################################################################################
+# APP SESSION ID
+# url="https://stagingtradingorestapi.swastika.co.in/auth/SSO/GetSSOAppSessionId/"
 
 # body={
-#     "uid":"TDEMO2"
+#  "AccessKey": "LAKSGPT@APK1734#",
+#  "AccessSecret": "AFE2253F-5A4F-4590-BA13-F69B3D8B5E10"
 # }
 
+# response=requests.post(url,json=body)
+# response=response.json()
 
-# body=json.dumps(body)
+# # print("kdsjfklsdfjkl")
+# # print(response)
+# session_id=response["Result"]["Data"]["AppSessionId"]
+
+# web_url=f"https://stagingjustradekb.swastika.co.in/auth/login?AppSessionId={session_id}&State=SWASTIKA"
+# print(web_url)
+
+######################################################################################################################
+#GENERATING ACCESS TOKEN FROM encrypted
+
+tthead="U2FsdGVkX18KmzRwlbVHflehmq2psrFs07jZbDGz4KapkIBeeR3mlT5bBerzOBWjCl1ZxE/7os9pjHJS4LNV2yMZ1VFTKbi54wmaap8MkXJ7xPqUJCYFtiJR0oh0K1gmvAKpPC7kDo8KWczvLxD8Q8/gEIH5/WvpuN3DHMBKyS9uZgDk4LZhWa17zeBaPPvbU8xotx49B1q8sPJg5JgnJxnVJSgdFeJ+fVHxoFrR9/BXiYzjLUEuHH5Qusg0nEypavnJbQVfVZb0dDqBSv/496Gd1W0Fnz/tgMNrQh1VqI668AuMbCkahmkL3rML9ZsHy1+h2QnZGFUOAqa6ZJJaZwf/oob9WQ553FnXFIjlg6bKwrnA8gVpeZRV/dG87y+0w3AFdUx21aNYUtZhCr0MyRTxb0qSk9xHvFZ+AbyCaIoUyd4G/oK9kOAeUp9NkgqPyxuFEg+rHy4a1R5jaE3K07/JakE9gDDbjzgS7J8rOt15wGp4NWpO3lEbEb1DqOCLdVJScUwTOkPA7JfIBUddHaY3WOanqwidxMVCUcdRC1FrITTGEhz1gT6lvhW86b7cLZQPfaSjoD4Iva+2bRT/Y0QGV6YfWQNzsj/lSFl8ldGFTEuf5fzK5djqYljr2XQTvvwfIM2DM5QTgbz7gcrnP+n4g9eS3EmROMMz+0VSIlaOpXNlzwzwgUlwnqYjAsuWy3Ihkh64ref1DyIurFYN35Im7Gl0rvaSONV75+J/i9bNRkAv7JVwrbIJ4SnMkV8IFNCh0ma1cryabCZlB/Wf2ATPjdFEUqMUD8JnYfvD4NPWjJanAu84uVCIe6Lsw7RQ0Zfl3Eezvdi77rAu9eCge4Ss3KMjWn1RiCcyiQYLQ7EuKZ85QwaOsHAbxpJC93oilZb09O+NXtwXh/cw8XWrRZ7qT51z67xT6Xs02eCjgo4lGRKOzuPKxlWUNURrrzopYwbfkWXv2rrVOdphIy/hmmURlI2fHNI71l3GmPGDtYY="
+response_data=aes256.decrypt(tthead, '9E5000F4-6489-4D84-8B67-B8D8D481F9BB')
+response_data=literal_eval(response_data.decode('utf-8'))
+print(response_data["ClientCode"])
+
+# print(response_data['AccessToken'])
+access_token=str(response_data['AccessToken'])
+
+######################################################################################################################
+#GETTING SECURITY INFO
+
+# url="https://stagingtradingorestapi.swastika.co.in/kb/PlaceOrders/GetSecurityInfo"
+
 
 # headers={
-#     "Authorization":"Bearer orCLa-fYnm7jYpTzYARKZVt9CXZQfOYMUcm5lXaMTxgPVI-piJtgbY91f-fFYFzeLLk5RvcSOnhJ6nkx48TOdL0r0ClkzqBSrUUfdcRxmTXsHwk3Q2Bz3KiGMqFPoZMKdOG2VvHgix1GDZjd8gooK48oWa6EJlCqfK5zW2D8Drl_z9VxdTLqRyxUpeLL1OSW0dGP1gyuXF1f-QG3fFBLmCoY15hz9IulErxIKNUygj8",
-#     "AppId":"lakshyaguptaApp",
-#     "version":"1"
+#     "Authorization":f"Bearer {access_token}"
 # }
-
-
-
-# encrypted = aes256.encrypt(body, 'lakshyagupta@01734')
-
-# decrypt=requests.post(url,data=encrypted,headers=headers)
-# # print(decrypt.json())
-# print(aes256.decrypt(decrypt.json()['Data'], 'lakshyagupta@01734'))
-
-
-# # /api/PlaceOrder/PlaceOrder
-
-# url="https://stagingtradingoapi.swastika.co.in/api/PlaceOrder/PlaceOrder"
 
 # body={
-#     "uid":"TDEMO2",
-#     "actid":"TDEMO1",
-#     "Tsym":"MSFT",
-#     "exch":"NSE",
-#     "Ttranstype":"B",
-#     "Ret":""
+# "Uid": "DEMO2",
+# "Exch": "NFO",
+# "Token": "42880"
 # }
+
+
+
+# decrypt=requests.post(url,headers=headers,json=body)
+# print(decrypt)
+# print(decrypt.content)
+
+######################################################################################################################
+# PLACE ORDER
+
+# url="https://stagingtradingorestapi.swastika.co.in/kb/PlaceOrders/PlaceOrder"
+
+# headers={
+#     "Authorization":f"Bearer {access_token}"
+# }
+
+# # response_data=aes256.decrypt(decrypt.json()['Data'], '9E5000F4-6489-4D84-8B67-B8D8D481F9BB')
+# # print(response_data)
+
+# body={
+#     "Uid": "DEMO2",
+#     "Actid": "DEMO2",
+#     "Exch": "NFO",
+#     "Tsym": "NIFTY08DEC22P18500",
+#     "Qty": "50",
+#     "Prc": "0",
+#     "Prd": "M",
+#     "Trantype": "B",
+#     "Prctyp": "MKT",
+#     "Ret": "DAY"
+#     }
+
+# decrypt=requests.post(url,headers=headers,json=body)
+# print(decrypt)
+# print(decrypt.content)

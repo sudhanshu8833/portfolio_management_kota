@@ -16,7 +16,7 @@
 	
 	<!-- PAGE TITLE HERE -->
 	<title>Algo99</title>
-	{% load static %}
+	{% load static %} 
 	<!-- FAVICONS ICON -->
 	<link rel="shortcut icon" type="image/png" href="images/favicon.png">
     <!-- Custom Stylesheet -->
@@ -72,7 +72,7 @@
         ***********************************-->
 		
 		<!--**********************************
-            Chat box start
+          Chat box start
         ***********************************-->
 
 		<!--**********************************
@@ -199,7 +199,7 @@
                                       <div class="mb-3 row">
                                         <label class="col-sm-3 col-form-label">Nifty price</label>
                                         <div class="col-sm-9">
-                                            <h4 style="color: rgb(90, 215, 247);">{{ nifty }}</h4>
+                                            <h4 style="color: rgb(86, 100, 102);">{{ nifty }}</h4>
                                         </div>
                                       </div>
 
@@ -305,6 +305,28 @@
                                                 </div>
                                             </div>
                                         </fieldset>
+
+                                        <fieldset class="mb-3">
+                                          <div class="row">
+                                              <label class="col-form-label col-sm-3 pt-0">paper</label>
+                                              <div class="col-sm-9">
+                                                  <div class="form-check">
+                                                      <input class="form-check-input" type="radio" name="paper" value="on" checked="">
+                                                      <label class="form-check-label">
+                                                          on
+                                                      </label>
+                                                  </div>
+                                                  <div class="form-check">
+                                                      <input class="form-check-input" type="radio" name="paper" value="off">
+                                                      <label class="form-check-label">
+                                                          off
+                                                      </label>
+                                                  </div>
+            
+
+                                              </div>
+                                          </div>
+                                      </fieldset>
                                         <div class="mb-3 row">
                                             <div class="col-sm-3">TYPE</div>
                                             <div class="col-sm-9">
@@ -329,6 +351,11 @@
                                           <div class="col-sm-10">
                                               <button type="submit" name="action" value="review" class="btn btn-primary">Review order (market)</button>
                                           </div>
+<!-- 
+                                          <div class="col-sm-10">
+                                            <button type="button" onclick=url_call( {{ user.app_session_id_url }}) value="review" class="btn btn-primary">Review order (market)</button>
+                                        </div> -->
+                                          {{ user.app_session_id_url }}
 
                                       </div>
 
